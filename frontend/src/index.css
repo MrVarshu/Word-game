@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  min-height: 100vh;
+}
+
+/* Custom Wordle Game Styles */
+.letter-tile {
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 2px solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.letter-tile.filled {
+  border-color: #6b7280;
+}
+
+.letter-tile.correct {
+  background-color: #6aaa64;
+  border-color: #6aaa64;
+  color: white;
+}
+
+.letter-tile.present {
+  background-color: #c9b458;
+  border-color: #c9b458;
+  color: white;
+}
+
+.letter-tile.absent {
+  background-color: #787c7e;
+  border-color: #787c7e;
+  color: white;
+}
+
+.keyboard-key {
+  padding: 0.75rem 0.75rem;
+  background-color: #e5e7eb;
+  color: #374151;
+  font-weight: 600;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  border: none;
+}
+
+.keyboard-key:hover {
+  background-color: #d1d5db;
+}
+
+.keyboard-key.correct {
+  background-color: #6aaa64;
+  color: white;
+}
+
+.keyboard-key.correct:hover {
+  background-color: #059669;
+}
+
+.keyboard-key.present {
+  background-color: #c9b458;
+  color: white;
+}
+
+.keyboard-key.present:hover {
+  background-color: #d97706;
+}
+
+.keyboard-key.absent {
+  background-color: #787c7e;
+  color: white;
+}
+
+.keyboard-key.absent:hover {
+  background-color: #4b5563;
+}
