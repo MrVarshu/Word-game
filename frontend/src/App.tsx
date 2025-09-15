@@ -4,18 +4,27 @@ import GameBoard from './components/GameBoard/GameBoard';
 import VirtualKeyboard from './components/Keyboard/VirtualKeyboard';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import Home from './components/Home/Home';
+import History from './components/History/History';
 import { authAPI, gameAPI } from './services/api';
 import { useGame } from './contexts/GameContext';
 
 // Game component that uses the game context
-const GameArea: React.FC = () => {
+const GameArea: React.FC<{ onBackToHome: () => void }> = ({ onBackToHome }) => {
   const { state, startNewGame, submitGuessSuccess, setLoading } = useGame();
+
+  // Auto-start a new game when GameArea loads
+  useEffect(() => {
+    if (!state.currentGame) {
+      handleStartNewGame();
+    }
+  }, []);
 
   const handleStartNewGame = async () => {
     try {
       setLoading(true);
       const response = await gameAPI.startNewGame();
-      startNewGame(response.gameId);
+      startNewGame(response.id); // Use 'id' instead of 'gameId'
     } catch (error) {
       console.error('Failed to start new game:', error);
     } finally {
@@ -59,6 +68,12 @@ const GameArea: React.FC = () => {
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold text-gray-900">WORDLE</h1>
             <div className="flex gap-4">
+              <button
+                onClick={onBackToHome}
+                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+              >
+                Home
+              </button>
               {!state.currentGame && (
                 <button
                   onClick={handleStartNewGame}
@@ -95,13 +110,6 @@ const GameArea: React.FC = () => {
         <div className="w-full max-w-lg">
           <GameBoard />
           <VirtualKeyboard />
-          
-          {!state.currentGame && (
-            <div className="text-center mt-8 text-gray-600">
-              <p className="mb-2">Click "New Game" to start playing!</p>
-              <p className="text-sm">Guess the 5-letter word in 6 attempts.</p>
-            </div>
-          )}
         </div>
       </main>
     </div>
@@ -112,6 +120,7 @@ const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentView, setCurrentView] = useState<'home' | 'game' | 'history'>('home');
 
   useEffect(() => {
     const token = authAPI.getToken();
@@ -128,11 +137,25 @@ const App: React.FC = () => {
   const handleLoginSuccess = () => {
     console.log('🎉 Login success called');
     setIsAuthenticated(true);
+    setCurrentView('home'); // Go to home after login
   };
 
   const handleRegisterSuccess = () => {
     console.log('🎉 Register success called');
     setIsAuthenticated(true);
+    setCurrentView('home'); // Go to home after register
+  };
+
+  const handleStartNewGame = async () => {
+    setCurrentView('game');
+  };
+
+  const handleViewHistory = () => {
+    setCurrentView('history');
+  };
+
+  const handleBackToHome = () => {
+    setCurrentView('home');
   };
 
   if (isLoading) {
@@ -161,9 +184,27 @@ const App: React.FC = () => {
     );
   }
 
+  // Render different views based on currentView state
+  if (currentView === 'home') {
+    return (
+      <Home 
+        onStartNewGame={handleStartNewGame}
+        onViewHistory={handleViewHistory}
+        isLoading={false}
+      />
+    );
+  }
+
+  if (currentView === 'history') {
+    return (
+      <History onBack={handleBackToHome} />
+    );
+  }
+
+  // Game view
   return (
     <GameProvider>
-      <GameArea />
+      <GameArea onBackToHome={handleBackToHome} />
     </GameProvider>
   );
 };

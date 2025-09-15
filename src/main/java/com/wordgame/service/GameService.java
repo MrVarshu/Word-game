@@ -108,15 +108,19 @@ public class GameService {
                 .orElseThrow(() -> new RuntimeException("Game not found"));
         return guessRepository.findByGame(game);
     }
-    
+
     public Game getGameById(Long gameId) {
         return gameRepository.findById(gameId)
                 .orElseThrow(() -> new RuntimeException("Game not found"));
     }
-    
+
+    public List<Game> getGameHistory(Long userId) {
+        return gameRepository.findByUserIdOrderByStartedAtDesc(userId);
+    }
+
     public Long getUserIdByUsername(String username) {
-    return userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("User not found"))
-            .getId();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"))
+                .getId();
     }
 }

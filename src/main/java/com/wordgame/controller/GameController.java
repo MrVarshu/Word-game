@@ -103,4 +103,35 @@ public class GameController {
     public ResponseEntity<String> testAuth(Principal principal) {
         return ResponseEntity.ok("Authentication works! User: " + principal.getName());
     }
+
+    @GetMapping("/history")
+    public ResponseEntity<?> getGameHistory(Principal principal) {
+        try {
+            Long userId = gameService.getUserIdByUsername(principal.getName());
+            List<Game> games = gameService.getGameHistory(userId);
+            
+            // Convert to response format
+            var historyResponse = games.stream()
+                .map(game -> {
+                    List<String> guesses = gameService.getGuesses(game.getId())
+                        .stream()
+                        .map(Guess::getGuessWord)
+                        .toList();
+                    
+                    return Map.of(
+                        "id", (Object) game.getId().toString(),
+                        "targetWord", (Object) game.getWord().getWord(),
+                        "guesses", (Object) guesses,
+                        "status", (Object) getGameStatus(game),
+                        "startTime", (Object) game.getStartedAt().toString(),
+                        "endTime", (Object) (game.getEndedAt() != null ? game.getEndedAt().toString() : null)
+                    );
+                })
+                .toList();
+            
+            return ResponseEntity.ok(historyResponse);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

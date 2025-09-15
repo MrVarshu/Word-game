@@ -24,8 +24,12 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
+    console.log('🔑 API Request:', config.url, 'Token exists:', !!token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('✅ Added Authorization header');
+    } else {
+      console.log('❌ No token found in localStorage');
     }
     return config;
   },
@@ -91,12 +95,17 @@ export const gameAPI = {
   },
 
   submitGuess: async (guessData: GuessRequest): Promise<GuessResponse> => {
-    const response = await api.post('/games/guess', guessData);
+    const response = await api.post(`/games/${guessData.gameId}/guess?guessWord=${guessData.guessWord}`);
     return response.data;
   },
 
   getCurrentGame: async (): Promise<any> => {
     const response = await api.get('/games/current');
+    return response.data;
+  },
+
+  getGameHistory: async (): Promise<any[]> => {
+    const response = await api.get('/games/history');
     return response.data;
   }
 };

@@ -18,6 +18,7 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     // Gameplay
     List<Game> findByUser(User user);
     List<Game> findByUserAndStartedAtBetween(User user, LocalDateTime start, LocalDateTime end);
+    List<Game> findByUserIdOrderByStartedAtDesc(Long userId);
 
     // Reporting
     long countByUserIdAndStartedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);

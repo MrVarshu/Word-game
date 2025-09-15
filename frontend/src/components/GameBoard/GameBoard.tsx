@@ -6,8 +6,8 @@ const GameBoard: React.FC = () => {
   const { state } = useGame();
   const { guesses, currentGuess, evaluations, gameStatus } = state;
 
-  // Create 6 rows for the game board
-  const rows = Array.from({ length: 6 }, (_, index) => {
+  // Create 5 rows for the game board
+  const rows = Array.from({ length: 5 }, (_, index) => {
     const guess = guesses[index] || '';
     const evaluation = evaluations[index];
     const isCurrentGuess = index === guesses.length && gameStatus === 'PLAYING';

@@ -29,8 +29,13 @@ export interface GuessResponse {
 }
 
 export interface StartGameResponse {
-  gameId: number;
-  message: string;
+  id: number;
+  user: any;
+  word: any;
+  startedAt: string;
+  endedAt?: string;
+  attempts: number;
+  won: boolean;
 }
 
 // Auth Types
