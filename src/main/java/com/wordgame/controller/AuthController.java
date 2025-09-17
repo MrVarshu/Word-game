@@ -6,6 +6,7 @@ import com.wordgame.entity.Role;
 import com.wordgame.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import java.util.Map;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,17 +17,21 @@ public class AuthController {
 
     private final AuthService authService;
 
+
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
-        authService.register(request.getUsername(), request.getPassword(), Role.PLAYER);
-        // Auto-login after registration
-        String token = authService.login(request.getUsername(), request.getPassword());
-        return ResponseEntity.ok(new AuthResponse(token));
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        try {
+            authService.register(request.getUsername(), request.getPassword(), Role.PLAYER);
+            return ResponseEntity.ok().body(Map.of("message", "User registered successfully"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody RegisterRequest request) {
-        String token = authService.login(request.getUsername(), request.getPassword());
-        return ResponseEntity.ok(new AuthResponse(token));
+    var user = authService.login(request.getUsername(), request.getPassword());
+    String token = authService.getJwtUtil().generateToken(user.getUsername());
+    return ResponseEntity.ok(new AuthResponse(token, user.getRole().name()));
     }
 }

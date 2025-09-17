@@ -47,26 +47,24 @@ public class GameService {
 
     @Transactional
     public Guess submitGuess(Long gameId, String guessWord) {
-        Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new RuntimeException("Game not found"));
-
+        Game game = gameRepository.findByIdWithWord(gameId);
+        if (game == null) {
+            throw new RuntimeException("Game not found");
+        }
         if (game.getEndedAt() != null || game.isWon()) {
             throw new RuntimeException("Game already ended");
         }
         if (game.getAttempts() >= 5) {
             throw new RuntimeException("Maximum guesses reached");
         }
-
         String target = game.getWord().getWord();
         String evaluation = evaluateGuess(guessWord, target);
-
         Guess guess = new Guess();
         guess.setGame(game);
         guess.setGuessWord(guessWord);
         guess.setGuessNumber(game.getAttempts() + 1);
         guess.setEvaluation(evaluation);
         guessRepository.save(guess);
-
         game.setAttempts(game.getAttempts() + 1);
         if (guessWord.equals(target)) {
             game.setWon(true);
@@ -74,7 +72,6 @@ public class GameService {
         } else if (game.getAttempts() >= 5) {
             game.setEndedAt(LocalDateTime.now());
         }
-
         gameRepository.save(game);
         return guess;
     }
@@ -90,7 +87,7 @@ public class GameService {
             } else if (target.indexOf(c) >= 0) {
                 color = "ORANGE";
             } else {
-                color = "GREY";
+                color = "GRAY";
             }
             sb.append("{\"letter\":\"")
               .append(c)
@@ -110,17 +107,33 @@ public class GameService {
     }
 
     public Game getGameById(Long gameId) {
-        return gameRepository.findById(gameId)
-                .orElseThrow(() -> new RuntimeException("Game not found"));
+        Game game = gameRepository.findByIdWithWord(gameId);
+        if (game == null) {
+            throw new RuntimeException("Game not found");
+        }
+        return game;
     }
 
     public List<Game> getGameHistory(Long userId) {
-        return gameRepository.findByUserIdOrderByStartedAtDesc(userId);
+    return gameRepository.findByUserIdWithWordOrderByStartedAtDesc(userId);
     }
 
     public Long getUserIdByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"))
                 .getId();
+    }
+
+    public boolean hasReachedDailyLimit(Long userId) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+        long gamesToday = gameRepository.countByUserIdAndStartedAtBetween(userId, startOfDay, endOfDay);
+        return gamesToday >= 3;
+    }
+
+    public Game getCurrentIncompleteGame(Long userId) {
+        List<Game> games = gameRepository.findByUserIdAndEndedAtIsNullOrderByStartedAtDesc(userId);
+        return games.isEmpty() ? null : games.get(0);
     }
 }

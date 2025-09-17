@@ -18,8 +18,14 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    public JwtUtil getJwtUtil() {
+        return jwtUtil;
+    }
 
     public void register(String username, String password, Role role) {
+        if (username == null || username.length() < 5) {
+            throw new RuntimeException("Username must be at least 5 characters long");
+        }
         if (userRepository.existsByUsername(username)) {
             throw new RuntimeException("Username already exists");
         }
@@ -30,10 +36,13 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public String login(String username, String password) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
-        );
-        return jwtUtil.generateToken(username);
+    public User login(String username, String password) {
+    authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(username, password)
+    );
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+    user.setPasswordHash(null); // Don't expose hash
+    return user;
     }
 }
