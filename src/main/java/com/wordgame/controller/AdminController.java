@@ -11,16 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-import com.wordgame.repository.UserRepository;
-import com.wordgame.repository.GameRepository;
-import com.wordgame.repository.GuessRepository;
-import com.wordgame.entity.User;
-import com.wordgame.entity.Game;
-import org.springframework.beans.factory.annotation.Autowired;
-import java.util.Optional;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.wordgame.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;

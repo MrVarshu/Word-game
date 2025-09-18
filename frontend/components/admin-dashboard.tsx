@@ -45,7 +45,8 @@ export function AdminDashboard() {
   );
   const today = new Date().toISOString().slice(0, 10);
   const [selectedDate, setSelectedDate] = useState(today);
-  const [selectedUser, setSelectedUser] = useState("");
+  const [selectedUserActivity, setSelectedUserActivity] = useState("");
+  const [selectedUserDaily, setSelectedUserDaily] = useState("");
   const [userActivityData, setUserActivityData] = useState<UserActivity[]>([]);
   const [userReportData, setUserReportData] =
     useState<UserDailyReport | null>(null);
@@ -59,17 +60,17 @@ export function AdminDashboard() {
   const handleGenerateActivityReport = async () => {
     setUserActivityError("");
     setUserActivityData([]);
-    if (!selectedUser.trim()) {
+    if (!selectedUserActivity.trim()) {
       setUserActivityError("Please enter a user ID or username.");
       return;
     }
     setIsLoading(true);
     try {
       let params;
-      if (/^\d+$/.test(selectedUser.trim())) {
-        params = { userId: selectedUser.trim() };
+      if (/^\d+$/.test(selectedUserActivity.trim())) {
+        params = { userId: selectedUserActivity.trim() };
       } else {
-        params = { username: selectedUser.trim() };
+        params = { username: selectedUserActivity.trim() };
       }
       const response = await adminApi.getUserActivity(params);
       if (response.error) {
@@ -87,13 +88,13 @@ export function AdminDashboard() {
   const handleGenerateDailyUserReport = async () => {
     setUserDailyError("");
     setUserReportData(null);
-    if (!selectedUser.trim()) {
+    if (!selectedUserDaily.trim()) {
       setUserDailyError("Please enter a user ID.");
       return;
     }
     setIsLoading(true);
     try {
-      const response = await adminApi.getUserReport(selectedUser, selectedDate);
+      const response = await adminApi.getUserReport(selectedUserDaily, selectedDate);
       if (response.error) {
         setUserDailyError(response.error);
       } else {
@@ -274,13 +275,13 @@ export function AdminDashboard() {
                     <input
                       type="text"
                       placeholder="Username or User ID"
-                      value={selectedUser}
-                      onChange={(e) => setSelectedUser(e.target.value)}
+                      value={selectedUserActivity}
+                      onChange={(e) => setSelectedUserActivity(e.target.value)}
                       className="border rounded-lg px-3 py-2 flex-1"
                     />
                     <button
                       onClick={handleGenerateActivityReport}
-                      disabled={isLoading || !selectedUser.trim()}
+                      disabled={isLoading || !selectedUserActivity.trim()}
                       className="bg-blue-600 text-white px-4 py-2 rounded-lg"
                     >
                       {isLoading ? "Loading..." : "Generate Activity Report"}
@@ -354,8 +355,8 @@ export function AdminDashboard() {
                     <input
                       type="text"
                       placeholder="User ID"
-                      value={selectedUser}
-                      onChange={(e) => setSelectedUser(e.target.value)}
+                      value={selectedUserDaily}
+                      onChange={(e) => setSelectedUserDaily(e.target.value)}
                       className="border rounded-lg px-3 py-2 flex-1"
                     />
                     <input
@@ -366,7 +367,7 @@ export function AdminDashboard() {
                     />
                     <button
                       onClick={handleGenerateDailyUserReport}
-                      disabled={isLoading || !selectedUser.trim()}
+                      disabled={isLoading || !selectedUserDaily.trim()}
                       className="bg-green-600 text-white px-4 py-2 rounded-lg"
                     >
                       {isLoading ? "Loading..." : "Get Daily"}
