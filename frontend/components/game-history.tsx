@@ -5,7 +5,7 @@ import { gameApi } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Trophy, X, Calendar, Target } from "lucide-react"
+import { ArrowLeft, Trophy, X, Calendar, Target, Star } from "lucide-react"
 
 interface User {
   id: string
@@ -154,7 +154,7 @@ export function GameHistory({ user, onNavigate }: GameHistoryProps) {
         <Card>
           <CardContent className="p-4 text-center">
             <div className="flex items-center justify-center mb-2">
-              <Trophy className="w-5 h-5 text-purple-500" />
+              <Star className="w-5 h-5 text-purple-500" />
             </div>
             <div className="text-2xl font-bold">{winRate}%</div>
             <div className="text-sm text-muted-foreground">Win Rate</div>

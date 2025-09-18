@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Play, History, Trophy, Target, Clock } from "lucide-react"
+import { Play, History, Trophy, Target, Clock, Flame } from "lucide-react"
 import { gameApi } from "@/lib/api"
 
 interface User {
@@ -195,7 +195,7 @@ export function HomePage({ user, onNavigate }: HomePageProps) {
             <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-purple-200 dark:border-purple-800">
               <CardContent className="p-6 text-center">
                 <div className="flex items-center justify-center mb-3">
-                  <Trophy className="w-8 h-8 text-purple-600" />
+                  <Flame className="w-8 h-8 text-purple-600" />
                 </div>
                 <div className="text-3xl font-bold text-purple-700 dark:text-purple-300">{stats.maxStreak}</div>
                 <div className="text-sm text-purple-600 dark:text-purple-400 font-medium">Best Streak</div>
