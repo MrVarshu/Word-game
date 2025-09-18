@@ -48,8 +48,10 @@ export function AdminDashboard() {
   const [selectedUserActivity, setSelectedUserActivity] = useState("");
   const [selectedUserDaily, setSelectedUserDaily] = useState("");
   const [userActivityData, setUserActivityData] = useState<UserActivity[]>([]);
-  const [userReportData, setUserReportData] =
-    useState<UserDailyReport | null>(null);
+  const [userReportData, setUserReportData] = useState<UserDailyReport | null>(null);
+  // Store userId and username for activity and report
+  const [userIdentity, setUserIdentity] = useState<{ userId?: string; username?: string } | null>(null);
+  const [userReportIdentity, setUserReportIdentity] = useState<{ userId?: string; username?: string } | null>(null);
   const [dailyReportData, setDailyReportData] = useState<DailyReport | null>(
     null
   );
@@ -60,6 +62,7 @@ export function AdminDashboard() {
   const handleGenerateActivityReport = async () => {
     setUserActivityError("");
     setUserActivityData([]);
+    setUserIdentity(null);
     if (!selectedUserActivity.trim()) {
       setUserActivityError("Please enter a user ID or username.");
       return;
@@ -76,7 +79,9 @@ export function AdminDashboard() {
       if (response.error) {
         setUserActivityError(response.error);
       } else {
-        setUserActivityData(response.data || []);
+        // response.data: { userId, username, activity }
+        setUserActivityData(response.data?.activity || []);
+  setUserIdentity({ userId: response.data?.userId?.toString(), username: response.data?.username });
       }
     } catch {
       setUserActivityError("Failed to fetch user activity.");
@@ -88,6 +93,7 @@ export function AdminDashboard() {
   const handleGenerateDailyUserReport = async () => {
     setUserDailyError("");
     setUserReportData(null);
+    setUserReportIdentity(null);
     if (!selectedUserDaily.trim()) {
       setUserDailyError("Please enter a user ID.");
       return;
@@ -98,7 +104,13 @@ export function AdminDashboard() {
       if (response.error) {
         setUserDailyError(response.error);
       } else {
-        setUserReportData(response.data || null);
+        // response.data: { userId, username, date, gamesPlayed, wins }
+        setUserReportData(response.data ? {
+          date: response.data.date,
+          gamesPlayed: response.data.gamesPlayed,
+          wins: response.data.wins
+        } : null);
+  setUserReportIdentity({ userId: response.data?.userId?.toString(), username: response.data?.username });
       }
     } catch {
       setUserDailyError("Failed to fetch daily user report.");
@@ -291,6 +303,12 @@ export function AdminDashboard() {
                     <p className="text-sm text-red-600">{userActivityError}</p>
                   )}
 
+                  {/* Show userId and username if available */}
+                  {userIdentity && (
+                    <div className="mb-2">
+                      <span className="font-semibold">User ID:</span> {userIdentity.userId || "-"} &nbsp;|&nbsp; <span className="font-semibold">Username:</span> {userIdentity.username || "-"}
+                    </div>
+                  )}
                   <div className="grid grid-cols-4 gap-4">
                     <div className="bg-indigo-50 p-4 rounded-xl text-center">
                       <p className="text-sm">Total Days</p>
@@ -377,6 +395,12 @@ export function AdminDashboard() {
                     <p className="text-sm text-red-600">{userDailyError}</p>
                   )}
 
+                  {/* Show userId and username if available for daily user report */}
+                  {userReportIdentity && (
+                    <div className="mb-2">
+                      <span className="font-semibold">User ID:</span> {userReportIdentity.userId || "-"} &nbsp;|&nbsp; <span className="font-semibold">Username:</span> {userReportIdentity.username || "-"}
+                    </div>
+                  )}
                   {userReportData && (
                     <div className="bg-green-50 rounded-xl p-4">
                       <p>Games Played: {userReportData.gamesPlayed}</p>
@@ -398,9 +422,8 @@ export function AdminDashboard() {
               )}
             </div>
           )}
-        </div>
+          </div>
       </div>
     </div>
-
   );
 }

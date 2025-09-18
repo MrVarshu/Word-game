@@ -148,10 +148,12 @@ export const adminApi = {
 
   getUserReport: async (userId: string, date: string) => {
     return apiRequest<{
-      date: number
-      gamesPlayed: number
-      wins: number
-    }>(`/api/admin/report/user/${userId}?date=${date}`)
+      userId: string | number;
+      username: string;
+      date: number;
+      gamesPlayed: number;
+      wins: number;
+    }>(`/api/admin/report/user/${userId}?date=${date}`);
   },
 
   // New: Get user activity summary by userId or username
@@ -161,10 +163,14 @@ export const adminApi = {
       : params.username
         ? `username=${encodeURIComponent(params.username)}`
         : '';
-    return apiRequest<Array<{
-      date: string,
-      numberOfWordsTried: number,
-      numberOfCorrectGuesses: number
-    }>>(`/api/admin/user/activity?${query}`);
+    return apiRequest<{
+      userId: string | number;
+      username: string;
+      activity: Array<{
+        date: string;
+        numberOfWordsTried: number;
+        numberOfCorrectGuesses: number;
+      }>;
+    }>(`/api/admin/user/activity?${query}`);
   },
 }

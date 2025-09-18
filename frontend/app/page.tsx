@@ -93,13 +93,6 @@ export default function App() {
               {user.role === "admin" && (
                 <div className="flex space-x-2">
                   <Button
-                    variant={currentView === "home" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleNavigation("home")}
-                  >
-                    Home
-                  </Button>
-                  <Button
                     variant={currentView === "admin" ? "default" : "outline"}
                     size="sm"
                     onClick={() => handleNavigation("admin")}

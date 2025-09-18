@@ -63,7 +63,11 @@ public class AdminController {
                 "numberOfCorrectGuesses", correctGuesses
             );
         }).collect(Collectors.toList());
-        return ResponseEntity.ok(summary);
+        return ResponseEntity.ok(Map.of(
+            "userId", user.getId(),
+            "username", user.getUsername(),
+            "activity", summary
+        ));
     }
 
     private final ReportService reportService;
@@ -83,15 +87,22 @@ public class AdminController {
     }
 
     @GetMapping("/report/user/{userId}")
-    public ResponseEntity<Map<String, Long>> getUserReport(
+    public ResponseEntity<?> getUserReport(
         @PathVariable Long userId,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-    long games = reportService.countGamesForUserOnDate(userId, date);
-    long wins = reportService.countWinsForUserOnDate(userId, date);
-    return ResponseEntity.ok(Map.of(
-        "date", (long) date.toEpochDay(),
-        "gamesPlayed", games,
-        "wins", wins
-    ));
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "User not found"));
+        }
+        User user = userOpt.get();
+        long games = reportService.countGamesForUserOnDate(userId, date);
+        long wins = reportService.countWinsForUserOnDate(userId, date);
+        return ResponseEntity.ok(Map.of(
+            "userId", user.getId(),
+            "username", user.getUsername(),
+            "date", (long) date.toEpochDay(),
+            "gamesPlayed", games,
+            "wins", wins
+        ));
     }
 }
