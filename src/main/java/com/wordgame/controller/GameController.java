@@ -108,9 +108,9 @@ public class GameController {
         try {
             Long userId = gameService.getUserIdByUsername(principal.getName());
             List<Game> games = gameService.getGameHistory(userId);
-            
-            // Convert to response format
+            // Only include completed games (endedAt != null)
             var historyResponse = games.stream()
+                .filter(game -> game.getEndedAt() != null)
                 .map(game -> {
                     List<String> guesses = gameService.getGuesses(game.getId())
                         .stream()
@@ -119,6 +119,7 @@ public class GameController {
                     String endTime = game.getEndedAt() != null ? game.getEndedAt().toString() : "";
                     return Map.of(
                         "id", (Object) game.getId().toString(),
+                        // Only show targetWord for completed games
                         "targetWord", (Object) game.getWord().getWord(),
                         "guesses", (Object) guesses,
                         "status", (Object) getGameStatus(game),
