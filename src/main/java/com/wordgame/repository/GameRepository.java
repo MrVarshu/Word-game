@@ -14,6 +14,7 @@ import java.util.List;
 
 
 public interface GameRepository extends JpaRepository<Game, Long> {
+    long countByUserIdAndWonTrueAndStartedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
     @Query("SELECT g FROM Game g JOIN FETCH g.word WHERE g.user.id = :userId ORDER BY g.startedAt DESC")
     List<Game> findByUserIdWithWordOrderByStartedAtDesc(@Param("userId") Long userId);
 

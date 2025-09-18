@@ -150,6 +150,21 @@ export const adminApi = {
     return apiRequest<{
       date: number
       gamesPlayed: number
+      wins: number
     }>(`/api/admin/report/user/${userId}?date=${date}`)
+  },
+
+  // New: Get user activity summary by userId or username
+  getUserActivity: async (params: { userId?: string; username?: string }) => {
+    const query = params.userId
+      ? `userId=${encodeURIComponent(params.userId)}`
+      : params.username
+        ? `username=${encodeURIComponent(params.username)}`
+        : '';
+    return apiRequest<Array<{
+      date: string,
+      numberOfWordsTried: number,
+      numberOfCorrectGuesses: number
+    }>>(`/api/admin/user/activity?${query}`);
   },
 }

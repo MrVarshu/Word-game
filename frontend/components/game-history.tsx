@@ -204,7 +204,7 @@ export function GameHistory({ user, onNavigate }: GameHistoryProps) {
                     <div className="flex items-center gap-3 mb-2">
                       <Badge variant={game.status === "WON" ? "default" : "destructive"}>{game.status === "WON" ? "Won" : "Lost"}</Badge>
                       <span className="font-mono text-lg font-bold">{game.targetWord}</span>
-                      <span className="text-sm text-muted-foreground">{game.guesses.length}/6 attempts</span>
+                      <span className="text-sm text-muted-foreground">{game.guesses.length}/5 attempts</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Calendar className="w-4 h-4" />

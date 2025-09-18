@@ -10,6 +10,11 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class ReportService {
+    public long countWinsForUserOnDate(Long userId, LocalDate date) {
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+        return gameRepository.countByUserIdAndWonTrueAndStartedAtBetween(userId, start, end);
+    }
 
     private final GameRepository gameRepository;
 
